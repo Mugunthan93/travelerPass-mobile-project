@@ -1,0 +1,7 @@
+{
+  "name": "tripmidas-mobile-project",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
