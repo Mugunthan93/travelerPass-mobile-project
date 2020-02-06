@@ -20,6 +20,7 @@ export class AccountPage implements OnInit,OnDestroy {
     this.userSub = this.authService.getUser.subscribe(
       (user) => {
         this.user = user;
+        console.log(user);
       }
     );
   }

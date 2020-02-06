@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import {  HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, from } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Account } from 'src/app/models/account';
 import { Booking } from 'src/app/models/booking';
+
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { Platform } from '@ionic/angular';
+import { Android, Desktop } from 'src/app/models/platform';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +17,7 @@ import { Booking } from 'src/app/models/booking';
 export class AuthService {
 
   private _user = new BehaviorSubject<any>(null);
+  
   options = {
     headers: new HttpHeaders(
       {
@@ -27,39 +32,91 @@ export class AuthService {
     return this._user.asObservable();
   }
 
+  get isUserAuthenticated() {
+    return this._user
+    .asObservable()
+    .pipe(
+      map(
+        (user) => {
+          if (user) {
+            return true;
+          }
+          else {
+            return false;
+          }
+        }
+      )
+    );;
+  }
+
   constructor(
-    private http : HttpClient
+    private http : HttpClient,
+    private platform : Platform,
+    private android : Android,
+    private desktop : Desktop
   ) {
-    console.log(this.options);
-   }
+
+  }
+
+  autoLogin() {
+    return from(this.android.getSession())
+      .pipe(
+        map(
+          (storedData) => {
+            if(!storedData){
+              return null;
+            }
+            else {
+              return storedData;
+            }
+          }
+        ),
+        tap(
+          (user) => {
+            if (user) {
+              this._user.next(user);
+            }
+          }
+        ),
+        map(
+          (user) => {
+            return !!user;
+          }
+        )
+      )
+
+  }
 
   login(userName : string,password : string) : Observable<any>{
-    console.log(userName,password);
     return this.http.post<User>(environment.baseURL + "/users/login" ,  { username: userName, password: password },this.options )
       .pipe(
         map( user => {
-          console.log(user);
                   if (
                     user.role === "accounts" ||
                     user.role === "management" ||
                     user.role === "buisnesshead"
                   ) {
                     let accountUser = new Account(user);
-                    this.storeSession(accountUser);
                     this._user.next(accountUser);
                     return accountUser;
                   } else {
                     let bookingUser = new Booking(user);
-                    this.storeSession(bookingUser);
                     this._user.next(bookingUser);
                     return bookingUser;
                   }
                 }),
-                switchMap(() => {
-                  return this._user;
-                }),
+                tap(
+                  (user) => {
+                    if(this.platform.is("android")){
+                      this.android.storeSession(user);
+                    }
+                    else if(this.platform.is("desktop")) {
+                      this.desktop.storeSession(user);
+                    }
+                    return this._user;
+                  }
+                ),
                 map(user => {
-                  console.log(user);
                   if(user instanceof Account){
                     return "account";
                   }
@@ -70,11 +127,14 @@ export class AuthService {
       )
   }
 
-  storeSession(user) {
-    sessionStorage.setItem("user", JSON.stringify(user));
-  }
-
-  clearSession() {
-    sessionStorage.removeItem("user");
+  logout(){
+    return this.http.post<User>(environment.baseURL + "/users/logout",this.options )
+      .pipe(
+        map(
+          (resData) => {
+            return resData;
+          }
+        )
+      );
   }
 }

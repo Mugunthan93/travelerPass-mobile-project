@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -18,8 +19,10 @@ export class LoginPage implements OnInit,OnDestroy {
 
   constructor(
     public authService : AuthService,
-    public router : Router
-  ) { }
+    public router : Router,
+    public loadingCtrl : LoadingController
+  ) {
+   }
 
   ngOnInit() {
     this.loginForm = new FormGroup({
@@ -32,14 +35,29 @@ export class LoginPage implements OnInit,OnDestroy {
     console.log(this.loginForm);
     if(this.loginForm.valid)
     {
-      this.loginSub = this.authService.login(this.loginForm.value.email,this.loginForm.value.password)
-        .subscribe(
-          (resData) => {
-            console.log(resData);
-            this.router.navigate([resData]);
-          }
-        )
+      this.presentLoading().then(
+        () => {
+          this.loginSub = this.authService.login(this.loginForm.value.email,this.loginForm.value.password)
+          .subscribe(
+            (resData) => {
+              console.log(resData);
+              this.loadingCtrl.dismiss();
+              this.router.navigate([resData]);
+            }
+          )
+        }
+      );
+      
     }
+  }
+
+  async presentLoading() {
+    const loading = await this.loadingCtrl.create({
+      message : 'Loading... Please wait',
+      spinner : 'dots'
+    });
+
+    return await loading.present();
   }
 
   ngOnDestroy(): void {
