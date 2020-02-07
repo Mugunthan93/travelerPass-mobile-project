@@ -18,28 +18,30 @@ export class AuthGuard implements CanLoad, CanActivate  {
 
 
   canLoad(route: Route, segments: UrlSegment[]): boolean | Observable<boolean> | Promise<boolean> {
-    return this.authService.isUserAuthenticated
-      .pipe(
-        take(1),
-        switchMap(
-          (isAuth) => {
-            if(!isAuth){
-              return this.authService.autoLogin();
-            }
-            else{
-              return of(isAuth);
-            }
-          }
-        ),
-        tap(
-          (isAuthenticated) => {
-            console.log(isAuthenticated);
-            if(!isAuthenticated){
-              this.router.navigate(["/login"]);
-            }
-          }
-        )
-      );
+
+    return true;
+    // return this.authService.isUserAuthenticated
+    //   .pipe(
+    //     take(1),
+    //     switchMap(
+    //       (isAuth) => {
+    //         if(!isAuth){
+    //           return this.authService.autoLogin();
+    //         }
+    //         else{
+    //           return of(isAuth);
+    //         }
+    //       }
+    //     ),
+    //     tap(
+    //       (isAuthenticated) => {
+    //         console.log(isAuthenticated);
+    //         if(!isAuthenticated){
+    //           this.router.navigate(["/login"]);
+    //         }
+    //       }
+    //     )
+    //   );
   }  
   
   

@@ -12,4 +12,8 @@ export class OnboardPage implements OnInit {
   ngOnInit() {
   }
 
+  segmentChanged(evt){
+
+  }
+
 }
