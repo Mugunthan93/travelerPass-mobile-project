@@ -1,7 +1,4 @@
-import { HttpHeaders } from '@angular/common/http';
-
-export abstract class User {
-
+export interface user {
   id: number;
   customer_id: number;
   email: string;
@@ -38,19 +35,57 @@ export abstract class User {
   resetPasswordToken: string;
   is_Password_Changed: string;
   resetPasswordExpires: string;
+}
 
-  options = {
-    headers: new HttpHeaders(
-      {
-        "Access-Control-Allow-Headers":"Content-Type",
-        "Access-Control-Allow-Methods":"GET, POST, OPTIONS, PUT, PATCH, DELETE",
-        "Access-Control-Allow-Origin":'*'
-    }),
-    withCredentials: true
+export class User {
+
+  role : any;
+
+  constructor(user : user){
+
+    if(user.role == 'manager'){
+      this.role = new Manager(user);
+    }
+    else if(user.role == 'user'){
+      this.role = new Employee(user);
+    }
+
   }
 
-  constructor(user){
-    Object.assign(this,user);
+}
+
+export class Employee {
+
+  constructor(user : user){
+
+  }
+
+  requestList(){
+
+  }
+
+  request(){
+
+  }
+
+  downloadTicket(){
+
+  }
+
+}
+
+export class Manager {
+
+  constructor(user : user){
+
+  }
+
+  approveList(){
+
+  }
+
+  approve() {
+    
   }
 
 }

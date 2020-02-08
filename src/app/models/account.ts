@@ -1,43 +1,40 @@
-import { User } from './user';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 
 export interface account{
 }
 
-export class Account extends User {
+export class Account {
 
   private http : HttpClient;
   private router : Router;
 
   constructor(user){
-    super(user);
   }
 
-  getEmployeeList(){
-    return this.http.get(environment.baseURL + "/customers/" + this.customer_id, this.options);
-  }
+  // getEmployeeList(){
+  //   return this.http.get(environment.baseURL + "/customers/" + this.customer_id, this.options);
+  // }
 
-  getCorporateList() {
-    return this.http.get(environment.baseURL + "/customers/", this.options)
-  }
+  // getCorporateList() {
+  //   return this.http.get(environment.baseURL + "/customers/", this.options)
+  // }
 
-  addEmployee(employee){
-    return this.http.post(environment.baseURL + "/users/" + this.customer_id, employee, this.options);
-  }
+  // addEmployee(employee){
+  //   return this.http.post(environment.baseURL + "/users/" + this.customer_id, employee, this.options);
+  // }
 
-  getEmployee(employee_id){
-    this.router.navigate([""]);
-  }
+  // getEmployee(employee_id){
+  //   this.router.navigate([""]);
+  // }
 
-  updateEmployee(employee){
-    return this.http.put(environment.baseURL + "/users/" + this.customer_id, employee, this.options);
-  }
+  // updateEmployee(employee){
+  //   return this.http.put(environment.baseURL + "/users/" + this.customer_id, employee, this.options);
+  // }
 
-  deletEmployee(){
-    return this.http.delete(environment.baseURL + "/users/" + this.customer_id, this.options);
-  }
+  // deletEmployee(){
+  //   return this.http.delete(environment.baseURL + "/users/" + this.customer_id, this.options);
+  // }
 
   addCorporate(){}
 

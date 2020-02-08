@@ -9,9 +9,10 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Android, Desktop } from './models/platform';
+import { InterceptorService } from './services/interceptor.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +24,8 @@ import { Android, Desktop } from './models/platform';
     Android,
     Desktop,
     NativeStorage,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass:InterceptorService, multi:true }
   ],
   bootstrap: [AppComponent],
 })
